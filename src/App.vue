@@ -78,7 +78,9 @@ function openFile() {
         <dd><a :href="currentUrl">{{ currentUrl }}</a></dd>
       </dl>
 
-      <a href="/">Choose another file</a> | <a href="{{ currentUrl }}">Reload</a>
+      <p>
+        <a href="/">Choose another file</a> | <a href="{{ currentUrl }}">Reload</a>
+      </p>
     </div>
 
     <h2>Overview</h2>
@@ -102,8 +104,10 @@ function openFile() {
   </div>
   <div v-else>
     <h1>What's your file?</h1>
-    <input type="text" v-model="fileUrl" />
-    <button @click="openFile">GO!</button>
+    <div class="url-input">
+      <input type="text" v-model="fileUrl" />
+      <button @click="openFile">GO!</button>
+    </div>
   </div>
 </template>
 
@@ -182,9 +186,31 @@ fieldset:not(:first-child) {
   color: white;
 }
 
+.url-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+}
+
 input {
-  font-size: 2rem;
+  font-size: 1rem;
+  width: 100%;
+  height: auto;
   padding: 8px;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid gray;
+}
+
+button {
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid gray;
+  background-color: rgb(66, 151, 145);
+  color: white;
+  cursor: pointer;
+  margin-left: 8px;
 }
 
 </style>
