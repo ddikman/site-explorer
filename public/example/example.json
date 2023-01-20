@@ -5,15 +5,15 @@
     "screens": [
         {
             "name": "Landing page",
-            "url": "example/landing.png"
+            "url": "landing.png"
         },
         {
             "name": "Projects",
-            "url": "example/projects.png"
+            "url": "projects.png"
         },
         {
             "name": "Menu",
-            "url": "example/menu.png"
+            "url": "menu.png"
         }
     ]
 }
