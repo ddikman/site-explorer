@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useScroll } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import { useRouteQuery } from '@vueuse/router'
 
 interface SiteData {
   name: string;
@@ -11,22 +13,36 @@ interface SiteData {
 
 interface Screen {
   name: string;
-  img: string;
+  url: string;
 }
 
-const fileUrl = ref('/example/example.json')
+const file = new URLSearchParams(window.location.search).get('file')
+const fileUrl = ref(window.location.origin + '/example/example.json')
+const currentUrl = ref(window.location.href)
 
 const screens = ref<Screen[]>([]);
 const site = ref<SiteData | null>();
 onMounted(async () => {
-  site.value = await fetch(fileUrl.value).then((res) => res.json()) as SiteData;
-  screens.value = site.value.screens
+  if (file) {
+    fileUrl.value = decodeURI(file)
+    site.value = await fetch(fileUrl.value).then((res) => res.json()) as SiteData;
+    screens.value = site.value.screens
+  }
 });
 
 function getAnchor(screen: Screen) {
   return screen.name.toLowerCase().replace(/ /g, '-');
 }
 
+function getImageUrl(url: string) {
+  if (url.startsWith('http')) {
+    return url;
+  }
+
+  const pathArray = fileUrl.value.split('/');
+  const folderUrl = pathArray.slice(0, -1).join('/');
+  return `${folderUrl}/${url}`;
+}
 
 const page = ref<HTMLElement | null>(null);
 const { y } = useScroll(page, { behavior: 'smooth' })
@@ -36,6 +52,11 @@ const showTopButton = computed(() => {
 
 const formatDateTime = (date: string) => {
   return new Date(date).toString()
+}
+
+function openFile() {
+  const encoded = encodeURI(fileUrl.value)
+  window.location.href = `/?file=${encoded}`
 }
 
 </script>
@@ -51,15 +72,17 @@ const formatDateTime = (date: string) => {
         <dt>Captured at</dt>
         <dd>{{ formatDateTime(site.captured) }}</dd>
         <dt>Share</dt>
-        <dd><a href="">http://localhost:5077/?file=xxx</a></dd>
+        <dd><a :href="currentUrl">{{ currentUrl }}</a></dd>
       </dl>
+
+      <a href="/">Choose another file</a> | <a href="{{ currentUrl }}">Reload</a>
     </div>
 
     <h2>Overview</h2>
     <div class="overview">
       <fieldset class="mini" v-for="screen in screens" :key="screen.name">
         <legend> {{  screen.name }}</legend>
-        <a :href="`#${getAnchor(screen)}`"><img :src="`${screen.img}`" /></a>
+        <a :href="`#${getAnchor(screen)}`"><img :src="`${getImageUrl(screen.url)}`" /></a>
       </fieldset>
     </div>
 
@@ -67,12 +90,17 @@ const formatDateTime = (date: string) => {
     <h2>All screens</h2>
     <fieldset v-for="screen in screens" :key="screen.name" :id="getAnchor(screen)">
       <legend> {{  screen.name }}</legend>
-      <img :src="`${screen.img}`" />
+      <img :src="`${getImageUrl(screen.url)}`" />
     </fieldset>
 
     <transition name="fade">
       <a href="#top"><div id="top-button" v-if="showTopButton">Top</div></a>
     </transition>
+  </div>
+  <div v-else>
+    <h1>What's your file?</h1>
+    <input type="text" v-model="fileUrl" />
+    <button @click="openFile">GO!</button>
   </div>
 </template>
 
@@ -149,6 +177,11 @@ fieldset:not(:first-child) {
   background-color:  rgb(191, 3, 195);;
   font-weight: bold;
   color: white;
+}
+
+input {
+  font-size: 2rem;
+  padding: 8px;
 }
 
 </style>
