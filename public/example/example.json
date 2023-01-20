@@ -1,0 +1,19 @@
+{
+    "name": "Greycastle",
+    "captured": "2023-01-01T00:00:00.000Z",
+    "url": "https://greycastle.se/",
+    "screens": [
+        {
+            "name": "Landing page",
+            "img": "/example/landing.png"
+        },
+        {
+            "name": "Projects",
+            "img": "/example/projects.png"
+        },
+        {
+            "name": "Menu",
+            "img": "/example/menu.png"
+        }
+    ]
+}
