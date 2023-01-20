@@ -40,8 +40,11 @@ function getImageUrl(url: string) {
   }
 
   const pathArray = fileUrl.value.split('/');
-  const folderUrl = pathArray.slice(0, -1).join('/');
-  return `${folderUrl}/${url}`;
+  let folderUrl = pathArray.slice(0, -1).join('/');
+  if (!url.startsWith('/')) {
+    folderUrl += '/';
+  }
+  return folderUrl + url;
 }
 
 const page = ref<HTMLElement | null>(null);
