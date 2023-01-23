@@ -1,24 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useScroll } from '@vueuse/core'
-import { useRouter } from 'vue-router'
-import { useRouteQuery } from '@vueuse/router'
 
-interface SiteData {
-  name: string;
-  url: string;
-  captured: string;
-  screens: Screen[];
-}
+import SiteData from './models/SiteData';
+import Screen from './models/Screen'
 
-interface Screen {
-  name: string;
-  url: string;
-}
+import AppSiteMetadata from './components/AppSiteMetadata.vue';
 
 const file = new URLSearchParams(window.location.search).get('file')
 const fileUrl = ref(window.location.origin + '/example/example.json')
-const currentUrl = ref(window.location.href)
 
 const screens = ref<Screen[]>([]);
 const site = ref<SiteData | null>();
@@ -53,10 +43,6 @@ const showTopButton = computed(() => {
   return y.value > 100;
 })
 
-const formatDateTime = (date: string) => {
-  return new Date(date).toString()
-}
-
 function openFile() {
   const encoded = encodeURI(fileUrl.value)
   window.location.href = `/?file=${encoded}`
@@ -68,20 +54,7 @@ function openFile() {
   <div ref="page" class="page" v-if="site">
     <h1 id="top"> {{ site.name }} </h1>
 
-    <div id="information">
-      <dl>
-        <dt>Site URL</dt>
-        <dd>{{ site.url }}</dd>
-        <dt>Captured at</dt>
-        <dd>{{ formatDateTime(site.captured) }}</dd>
-        <dt>Share</dt>
-        <dd><a :href="currentUrl">{{ currentUrl }}</a></dd>
-      </dl>
-
-      <p>
-        <a href="/">Choose another file</a> | <a href="{{ currentUrl }}">Reload</a>
-      </p>
-    </div>
+    <AppSiteMetadata :site="site" />
 
     <h2>Overview</h2>
     <div class="overview">
